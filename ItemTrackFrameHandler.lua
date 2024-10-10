@@ -1,52 +1,61 @@
-local function applyHoverEffect(frame, enabled, targetFrame)
+local function applyHoverEffect(itemIconInfo, enabled)
     local fadeDuration = 0.1;
 
-    if (enabled and targetFrame ~= nil) then
-        local function createAlphaHandler(alpha, duration)
-            return function ()
-                UIFrameFadeIn(targetFrame, duration, targetFrame:GetAlpha(), alpha)
+    if (enabled and itemIconInfo.iconFrame ~= nil) then
+        local function createAlphaHandler(alpha, duration, originalFunction)
+            return function (self, ...)
+                UIFrameFadeIn(itemIconInfo.iconFrame, duration, itemIconInfo.iconFrame:GetAlpha(), alpha)
+                if (originalFunction) then
+                    originalFunction(self, ...);
+                end
             end
         end
-        frame:SetScript("OnEnter", createAlphaHandler(1, fadeDuration));
-        frame:SetScript("OnLeave", createAlphaHandler(ItemTrack_IconFadeAmount, fadeDuration));
+
+        itemIconInfo.parentFrame:SetScript("OnEnter", createAlphaHandler(1, fadeDuration, itemIconInfo.onEnterFunction));
+        itemIconInfo.parentFrame:SetScript("OnLeave", createAlphaHandler(ItemTrack_IconFadeAmount, fadeDuration, itemIconInfo.onLeaveFunction));
     else
-        frame:SetScript("OnEnter", nil);
-        frame:SetScript("OnLeave", nil);
-        if (targetFrame ~= nil) then
-            targetFrame:SetAlpha(ItemTrack_IconFadeAmount);
+        itemIconInfo.parentFrame:SetScript("OnEnter", itemIconInfo.onEnterFunction);
+        itemIconInfo.parentFrame:SetScript("OnLeave", itemIconInfo.onLeaveFunction);
+
+        -- Reset opacity on reseting events.
+        if (itemIconInfo.iconFrame ~= nil) then
+            itemIconInfo.iconFrame:SetAlpha(ItemTrack_IconFadeAmount);
         end
     end
 end
 
-function ItemTrack_ApplyIcon(entry)
+function ItemTrack_ApplyIcon(itemIconInfo)
     -- Don't duplicate frames.
-    if (entry.iconFrame ~= nil) then
-        entry.iconFrame:Show();
+    if (itemIconInfo.iconFrame ~= nil) then
+        itemIconInfo.iconFrame:Show();
         return;
     end
 
-    local atlasAssetId = ItemRewardTrackAtlasIds[entry.rank];
+    local atlasAssetId = ItemRewardTrackAtlasIds[itemIconInfo.rank];
 
     -- Create a frame and return it.
-    local f = CreateFrame("Frame", nil, entry.parentFrame);
-    f:SetFrameStrata("TOOLTIP");
-    f:SetWidth(34);
-    f:SetHeight(28);
-    f:SetAlpha(ItemTrack_IconFadeAmount);
-    f:EnableMouse(false);
+    local iconFrame = CreateFrame("Frame", nil, itemIconInfo.parentFrame);
+    iconFrame:SetFrameStrata("TOOLTIP");
+    iconFrame:SetFrameLevel(200);
+    iconFrame:SetWidth(34);
+    iconFrame:SetHeight(28);
+    iconFrame:SetAlpha(ItemTrack_IconFadeAmount);
+    iconFrame:EnableMouse(false);
 
-    local t = f:CreateTexture(nil, "OVERLAY");
+    local t = iconFrame:CreateTexture(nil, "OVERLAY");
     t:SetAtlas(atlasAssetId);
-    t:SetAllPoints(f);
+    t:SetAllPoints(iconFrame);
 
-    f.texture = t;
+    iconFrame.texture = t;
 
-    f:SetPoint("CENTER", -4, 7);
-    f:Show();
+    iconFrame:SetPoint("CENTER", -4, 7);
+    iconFrame:Show();
 
-    applyHoverEffect(entry.parentFrame, true, f);
+    -- Apply to icon frame to complete the object and apply the effects.
+    itemIconInfo.iconFrame = iconFrame;
+    applyHoverEffect(itemIconInfo, true);
 
-    return f;
+    return iconFrame;
 end
 
 function ItemTrack_ClearFrames()
@@ -54,7 +63,7 @@ function ItemTrack_ClearFrames()
         if (not frames) then return end
         for _, itemIconInfo in pairs(frames) do
             if (itemIconInfo.iconFrame ~= nil) then
-                applyHoverEffect(itemIconInfo.parentFrame, false, nil);
+                applyHoverEffect(itemIconInfo, false);
                 itemIconInfo.iconFrame:Hide();
             end
         end

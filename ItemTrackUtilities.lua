@@ -67,7 +67,6 @@ function ItemTrack_CanItemBeMarkedWithAnIcon(itemLink)
 
       if (isOnRewardTrack) then
           local rewardTrackName = ItemTrack_GetRewardTrackFromToolTipLine(text)
-
           return true, rewardTrackName;
       end
     end

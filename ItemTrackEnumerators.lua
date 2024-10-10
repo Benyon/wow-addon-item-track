@@ -4,11 +4,11 @@ function ItemTrack_EnumerateInventory()
     local bagFrames = {combinedBagsFrame:GetChildren()};
     ItemTrack_ClearFrames();
 
-    for _, frame in ipairs(bagFrames) do
-        local frameIsBagSlot, id = ItemTrack_IsFrameABagSlot(frame);
+    for _, itemButton in ipairs(bagFrames) do
+        local frameIsBagSlot, id = ItemTrack_IsFrameABagSlot(itemButton);
 
         if (frameIsBagSlot and id) then
-            local hasBagSlotGotItem, itemLink = ItemTrack_GetBagSlotItemIfExists(frame);
+            local hasBagSlotGotItem, itemLink = ItemTrack_GetBagSlotItemIfExists(itemButton);
 
             if (hasBagSlotGotItem) then
                 local canItemBeMarked, rank = ItemTrack_CanItemBeMarkedWithAnIcon(itemLink);
@@ -17,7 +17,9 @@ function ItemTrack_EnumerateInventory()
                     ItemTrack_BagFrames[id] = {
                         item = itemLink,
                         rank = rank,
-                        parentFrame = frame,
+                        parentFrame = itemButton,
+                        onEnterFunction = itemButton:GetScript('OnEnter');
+                        onLeaveFunction = itemButton:GetScript('OnLeave');
                     }
                     local iconFrame = ItemTrack_ApplyIcon(ItemTrack_BagFrames[id]);
                     ItemTrack_BagFrames[id].iconFrame = iconFrame;
@@ -36,10 +38,13 @@ function ItemTrack_EnumerateCharacter()
             local canItemBeMarked, rank = ItemTrack_CanItemBeMarkedWithAnIcon(itemLink);
 
             if (canItemBeMarked) then
+                local characterSlot = _G["Character"..slot.."Slot"];
                 ItemTrack_CharacterFrames[invSlotId] = {
                     item = itemLink,
                     rank = rank,
-                    parentFrame = _G["Character"..slot.."Slot"],
+                    parentFrame = characterSlot,
+                    onEnterFunction = characterSlot:GetScript('OnEnter'),
+                    onLeaveFunction = characterSlot:GetScript('OnLeave'),
                 }
                 local iconFrame = ItemTrack_ApplyIcon(ItemTrack_CharacterFrames[invSlotId]);
                 ItemTrack_CharacterFrames[invSlotId].iconFrame = iconFrame;

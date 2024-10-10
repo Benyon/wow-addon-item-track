@@ -19,15 +19,20 @@ ItemTrack = LibStub('AceAddon-3.0'):NewAddon(
 
 -- Table to store command definitions
 ItemTrack.commands = {
-    fade = function (value)
-        local num = tonumber(value);
-        print('fade as ' .. value .. ' with num as ' .. num);
-        ItemTrack_IconFadeAmount = num;
+    opacity = function (value)
+        local num = tonumber(value)
+        if (num and (num >= 0) and (num <= 1)) then
+            ItemTrack_IconFadeAmount = num
+            Log('Opacity is set to ' .. ItemTrack_IconFadeAmount)
+        else
+            Log('Invalid opacity value. Please provide a number between 0 and 1.')
+        end
     end;
     debug = function ()
+
         local function outputItemTrackFrames(table, context)
-            if (#table) then
-                Log('No '.. context .. ' detected');
+            if (TableLength(table) == 0) then
+                Log('No "'.. context .. '" entries detected');
             else
                 for key, info in pairs(table) do
                     Log('Key: ' .. key);
@@ -38,15 +43,20 @@ ItemTrack.commands = {
                     Log('');
                 end
             end
+            Log('Frame "' .. context .. '" has ' .. tostring(TableLength(table)) .. ' entries');
         end
+
         outputItemTrackFrames(ItemTrack_BagFrames, 'bag');
         outputItemTrackFrames(ItemTrack_CharacterFrames, 'character');
+        Log('Opacity is set to ' .. ItemTrack_IconFadeAmount);
+
     end
 }
 
 -- When the addon is loaded.
 function ItemTrack:OnInitialize()
 	self:RegisterChatCommand("itemtrack", "SlashCommand");
+	self:RegisterChatCommand("it", "SlashCommand");
 
     -- Default variables.
     if (ItemTrack_IconFadeAmount == nil) then
@@ -75,8 +85,6 @@ end
 --- When a user does `/itemtrack`
 function ItemTrack:SlashCommand(input)
     local commandName, value = input:match("^(%S+)%s*(.*)$")  -- Match command and value
-    print('commandName', commandName)
-    print('value', value);
 
     if commandName and self.commands[commandName] then
         self.commands[commandName](value);
