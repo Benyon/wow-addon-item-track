@@ -95,7 +95,7 @@ if [[ -e "./dist" ]]; then
 fi
 mkdir "./dist"
 cd "$target_addon_dir"
-zip -r BisAlert.zip .\\
+zip -r BisAlert.zip .\\ > /dev/null 2>&1
 mv "BisAlert.zip" "$original_dir/dist/BisAlert.zip"
 echo -e "${GREEN}Addon zipped up.${RESET}"
 
