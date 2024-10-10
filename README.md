@@ -4,7 +4,7 @@ ItemTrack is a World of Warcraft addon designed to help players clearly see the 
 
 ## Installation
 
-1. Download the latest version of ItemTrack from [CurseForge](URL_HERE__) or [WoWInterface](URL_HERE__).
+1. Download the latest version of ItemTrack from [CurseForge](https://legacy.curseforge.com/wow/addons/itemtrack-reward-track-icons).
 2. Extract the downloaded file into your World of Warcraft `\_retail_\Interface\AddOns` folder.
 3. Restart World of Warcraft or reload your UI.
 
