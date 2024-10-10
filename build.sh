@@ -3,6 +3,7 @@
 set -e  # Exit immediately if a command exits with a non-zero status.
 
 # Initialize variables, flag_o is for --o flag
+project_name=$(basename $PWD | sed -r 's/(^|-)([a-z])/\U\2/g')
 flag_o=false
 files_to_remove=(
     ".git"
@@ -95,8 +96,8 @@ if [[ -e "./dist" ]]; then
 fi
 mkdir "./dist"
 cd "$target_addon_dir"
-zip -r BisAlert.zip .\\ > /dev/null 2>&1
-mv "BisAlert.zip" "$original_dir/dist/BisAlert.zip"
+zip -r $project_name.zip .\\ > /dev/null 2>&1
+mv "$project_name.zip" "$original_dir/dist/$project_name.zip"
 echo -e "${GREEN}Addon zipped up.${RESET}"
 
 # TODO: Zip up folder for dist
