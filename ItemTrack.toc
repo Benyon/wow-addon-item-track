@@ -3,7 +3,7 @@
 ## Title: ItemTrack
 ## Notes: Add reward track icons to items.
 ## Author: Jordan Benyon
-## SavedVariablesPerCharacter: ItemTrack_Placeholder
+## SavedVariablesPerCharacter: ItemTrack_IconFadeAmount
 
 Libs\LibStub\LibStub.lua
 Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
@@ -13,6 +13,7 @@ Libs\AceDB-3.0\AceDB-3.0.xml
 Libs\AceConsole-3.0\AceConsole-3.0.xml
 Libs\AceGUI-3.0\AceGUI-3.0.xml
 Libs\AceConfig-3.0\AceConfig-3.0.xml
-ItemTrackIconHandler.lua
+ItemTrackFrameHandler.lua
 ItemTrackUtilities.lua
+ItemTrackEnumerators.lua
 ItemTrack.lua

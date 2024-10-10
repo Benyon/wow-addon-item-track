@@ -2,6 +2,14 @@
 ItemTrack_BagFrames = {};
 ItemTrack_CharacterFrames = {};
 
+local helpMessage = [[
+ItemTrack.
+
+/itemtrack debug -- Enables debug mode for better logging when running /itemtrack.
+/itemtrack opacity <number> -- Sets the fade opacity of the applied icons.
+
+]];
+
 -- Addon Core
 ItemTrack = LibStub('AceAddon-3.0'):NewAddon(
     "ItemTrack",
@@ -9,9 +17,41 @@ ItemTrack = LibStub('AceAddon-3.0'):NewAddon(
     "AceEvent-3.0"
 );
 
+-- Table to store command definitions
+ItemTrack.commands = {
+    fade = function (value)
+        local num = tonumber(value);
+        print('fade as ' .. value .. ' with num as ' .. num);
+        ItemTrack_IconFadeAmount = num;
+    end;
+    debug = function ()
+        local function outputItemTrackFrames(table, context)
+            if (#table) then
+                Log('No '.. context .. ' detected');
+            else
+                for key, info in pairs(table) do
+                    Log('Key: ' .. key);
+                    Log('    item: ' .. (info.item or 'unknown'));
+                    Log('    parentFrame: ' .. (info.parentFrame:GetDebugName() or 'unknown'));
+                    Log('    rank: ' .. (info.rank or 'unknown'));
+                    Log('    iconFrame: ' .. (info.iconFrame:GetDebugName() or 'unknown'));
+                    Log('');
+                end
+            end
+        end
+        outputItemTrackFrames(ItemTrack_BagFrames, 'bag');
+        outputItemTrackFrames(ItemTrack_CharacterFrames, 'character');
+    end
+}
+
 -- When the addon is loaded.
 function ItemTrack:OnInitialize()
-	self:RegisterChatCommand("itemtrack", "SlashCommand"); -- TODO
+	self:RegisterChatCommand("itemtrack", "SlashCommand");
+
+    -- Default variables.
+    if (ItemTrack_IconFadeAmount == nil) then
+        ItemTrack_IconFadeAmount = 0.5;
+    end
 
     function ItemTrack:OnEnable()
         self:RegisterEvent("BAG_UPDATE");
@@ -33,26 +73,21 @@ function ItemTrack:UNIT_INVENTORY_CHANGED(_, unit)
 end
 
 --- When a user does `/itemtrack`
-function ItemTrack:SlashCommand()
+function ItemTrack:SlashCommand(input)
+    local commandName, value = input:match("^(%S+)%s*(.*)$")  -- Match command and value
+    print('commandName', commandName)
+    print('value', value);
 
-    Log('Outputting ItemTrack_BagFrames ---------');
-    for key, value in pairs(ItemTrack_BagFrames) do
-        Log('Key: ' .. key);
-        Log('    parentFrame: ' .. (value.parentFrame:GetDebugName() or 'unknown'));
-        Log('    rank: ' .. (value.rank or 'unknown'));
-        Log('    iconFrame: ' .. (value.iconFrame:GetDebugName() or 'unknown'));
+    if commandName and self.commands[commandName] then
+        self.commands[commandName](value);
+    else
+        Log(helpMessage);
     end
-    Log('--------- End');
-    
 end
 
 --- When the player opens the character panel.
-CharacterFrame:HookScript("OnShow", function ()
-    Log("TODO - ItemTrack_EnumerateCharacterPanel");
-end)
+CharacterFrame:HookScript("OnShow", ItemTrack_EnumerateCharacter);
 
 --- When the player opens the combined bags window.
-ContainerFrameCombinedBags:HookScript("OnShow", function ()
-    ItemTrack_EnumerateInventory()
-end);
+ContainerFrameCombinedBags:HookScript("OnShow", ItemTrack_EnumerateInventory);
 

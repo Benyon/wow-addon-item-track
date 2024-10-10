@@ -18,18 +18,14 @@ ItemSlotNames = {
 }
 
 ItemRewardTrackAtlasIds = {
-    Explorer = "hello im an explorer",
-    Myth = "hello im a myth",
+    -- Crafted = 'todo',
+    -- Explorer = "no icon for this.",
+    Adventurer = "Professions-Icon-Quality-Tier1-Inv",
+    Veteran = "Professions-Icon-Quality-Tier2-Inv",
+    Champion = "Professions-Icon-Quality-Tier3-Inv",
+    Hero = "Professions-Icon-Quality-Tier4-Inv",
+    Myth = "Professions-Icon-Quality-Tier5-Inv",
 }
-
-ItemRewardTracks = {
-    "Explorer",
-    "Adventurer",
-    "Veteran",
-    "Champion",
-    "Hero",
-    "Myth"
-};
 
 --- Get a list of the reward tracks.
 ItemRewardTracks = {}
@@ -78,9 +74,9 @@ function ItemTrack_CanItemBeMarkedWithAnIcon(itemLink)
   end
 
 function ItemTrack_GetRewardTrackFromToolTipLine(text)
-    for _, track in ipairs(tracks) do
+    for _, track in ipairs(ItemRewardTracks) do
         if string.find(text, track) then
-              return track;
+                return track;
         end
     end
     return nil;
@@ -93,21 +89,4 @@ function ItemTrack_IsFrameABagSlot(frame)
 
     local id = string.match(frameName, "%.([a-f0-9]+)$");
     return true, id;
-end
-
-function BIS_EnumerateCharacterPanel()
-    -- Iterate through item slots in character panel.
-    for _, slot in pairs(ItemSlotNames) do
-        local invSlotId = GetInventorySlotInfo(string.upper(slot).."SLOT")
-        local itemLink = GetInventoryItemLink('player', invSlotId)
-        if itemLink ~= nil then
-            local itemId = GetItemInfoFromHyperlink(itemLink) or 0
-            local itemName = GetItemInfo(itemId)
-            local isBIS = BIS_IsItemBestInSlotItem(itemName)
-            if isBIS == true then
-                local marker = BIS_ApplyNewIcon(_G["Character"..slot.."Slot"])
-                table.insert(BISCharacterFrames, marker)
-            end
-        end
-    end
 end
