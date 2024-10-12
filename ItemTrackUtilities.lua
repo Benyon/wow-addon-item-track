@@ -33,6 +33,22 @@ for key, _ in pairs(ItemRewardTrackAtlasIds) do
     table.insert(ItemRewardTracks, key)
 end
 
+function WaitForFrameVisibility(containerFrameName, timeout, ifVisibleFn)
+    local startTime = GetTime() -- Start time.
+    local checkInterval = 0.005 -- Check every 0.1 seconds.
+
+    local function check()
+        local containerFrame = _G[containerFrameName]
+        if (containerFrame and (containerFrame:IsVisible())) then
+            ifVisibleFn(containerFrame);  -- Run the action if we find it.
+        elseif GetTime() - startTime >= timeout then return; -- Cancel the check.
+        else C_Timer.After(checkInterval, check) end -- Reschedual another check.
+    end
+
+    -- Start the checking process
+    C_Timer.After(checkInterval, check)
+end
+
 --- Brand colour logging.
 function Log(...)
     local args = {...}
@@ -83,8 +99,9 @@ end
 
 function ItemTrack_IsFrameABagSlot(frame)
     local frameName = frame:GetDebugName();
-    local isBagSlot = string.match(frameName, "ContainerFrameCombinedBags%.[a-f0-9]+");
-    if (not isBagSlot) then return nil end
+    local isBagSlot = string.match(frameName, "ContainerFrame%d%.[a-f0-9]+");
+    local isCombinedBagSlot = string.match(frameName, "ContainerFrameCombinedBags%.[a-f0-9]+");
+    if (not isBagSlot and not isCombinedBagSlot) then return nil end
 
     local id = string.match(frameName, "%.([a-f0-9]+)$");
     return true, id;

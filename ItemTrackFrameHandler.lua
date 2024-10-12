@@ -58,16 +58,14 @@ function ItemTrack_ApplyIcon(itemIconInfo)
     return iconFrame;
 end
 
-function ItemTrack_ClearFrames()
-    local function clearFrames(frames)
-        if (not frames) then return end
-        for _, itemIconInfo in pairs(frames) do
+function ItemTrack_ClearFrames(...)
+    local frameTables = {...}
+    for _, frameTable in ipairs(frameTables) do
+        for _, itemIconInfo in pairs(frameTable) do
             if (itemIconInfo.iconFrame ~= nil) then
                 applyHoverEffect(itemIconInfo, false);
                 itemIconInfo.iconFrame:Hide();
             end
         end
     end
-    clearFrames(ItemTrack_BagFrames)
-    clearFrames(ItemTrack_CharacterFrames)
 end

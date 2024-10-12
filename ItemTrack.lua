@@ -1,6 +1,14 @@
 -- Frame storage object.
-ItemTrack_BagFrames = {};
 ItemTrack_CharacterFrames = {};
+ItemTrack_CombinedBagFrames = {};
+ItemTrack_ContainerBagFrames = {
+    ContainerFrame1 = {},
+    ContainerFrame2 = {},
+    ContainerFrame3 = {},
+    ContainerFrame4 = {},
+    ContainerFrame5 = {},
+    ContainerFrame6 = {}
+};
 
 local helpMessage = [[
 ItemTrack.
@@ -46,7 +54,7 @@ ItemTrack.commands = {
             Log('Frame "' .. context .. '" has ' .. tostring(TableLength(table)) .. ' entries');
         end
 
-        outputItemTrackFrames(ItemTrack_BagFrames, 'bag');
+        outputItemTrackFrames(ItemTrack_CombinedBagFrames, 'bag');
         outputItemTrackFrames(ItemTrack_CharacterFrames, 'character');
         Log('Opacity is set to ' .. ItemTrack_IconFadeAmount);
 
@@ -72,14 +80,25 @@ function ItemTrack:OnInitialize()
 end
 
 -- When an item is moved, added or removes from the bag.
-function ItemTrack:BAG_UPDATE()
-    ItemTrack_EnumerateInventory();
+function ItemTrack:BAG_UPDATE(_, bagId)
+    local containerId = tostring(bagId + 1);
+    local containerName = "ContainerFrame" .. containerId;
+    ItemTrack_ClearFrames(
+        ItemTrack_CharacterFrames,
+        ItemTrack_CombinedBagFrames,
+        ItemTrack_ContainerBagFrames[containerName]
+    );
+    ItemTrack_CombinedBags();
+    ItemTrack_NonCombinedBags(_G[containerName], ItemTrack_ContainerBagFrames[containerName]);
+    ItemTrack_EnumerateCharacter();
 end
 
 --- When the player equips or unequips an item. (excludes rings and trinkets)
 function ItemTrack:UNIT_INVENTORY_CHANGED(_, unit)
     if (unit ~= "player") then return end
-    ItemTrack_EnumerateInventory()
+    ItemTrack_ClearFrames(ItemTrack_CharacterFrames, ItemTrack_CombinedBagFrames);
+    ItemTrack_CombinedBags();
+    ItemTrack_EnumerateCharacter();
 end
 
 --- When a user does `/itemtrack`
@@ -94,8 +113,24 @@ function ItemTrack:SlashCommand(input)
 end
 
 --- When the player opens the character panel.
-CharacterFrame:HookScript("OnShow", ItemTrack_EnumerateCharacter);
+CharacterFrame:HookScript("OnShow", function ()
+    ItemTrack_ClearFrames(ItemTrack_CharacterFrames);
+    ItemTrack_EnumerateCharacter();
+end);
 
 --- When the player opens the combined bags window.
-ContainerFrameCombinedBags:HookScript("OnShow", ItemTrack_EnumerateInventory);
+ContainerFrameCombinedBags:HookScript("OnShow", function ()
+    ItemTrack_ClearFrames(ItemTrack_CombinedBagFrames);
+    ItemTrack_CombinedBags();
+end);
 
+--- When the player opens any of the non combined bags windows.
+for i = 1, 7 do
+    local containerFrame = _G["ContainerFrame"..i]
+    if containerFrame then
+        containerFrame:HookScript("OnShow", function ()
+            ItemTrack_ClearFrames(ItemTrack_ContainerBagFrames["ContainerFrame"..i]);
+            ItemTrack_NonCombinedBags(containerFrame, ItemTrack_ContainerBagFrames["ContainerFrame"..i]);
+        end);
+    end
+end
