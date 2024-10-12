@@ -25,30 +25,36 @@ local function applyHoverEffect(itemIconInfo, enabled)
 end
 
 function ItemTrack_ApplyIcon(itemIconInfo)
+    local rankIconInfo = ItemRewardIconInfo[itemIconInfo.rank];
+
     -- Don't duplicate frames.
     if (itemIconInfo.iconFrame ~= nil) then
+        itemIconInfo.iconFrame.texture:SetAtlas(rankIconInfo.atlasId);
         itemIconInfo.iconFrame:Show();
         return;
     end
-
-    local atlasAssetId = ItemRewardTrackAtlasIds[itemIconInfo.rank];
 
     -- Create a frame and return it.
     local iconFrame = CreateFrame("Frame", nil, itemIconInfo.parentFrame);
     iconFrame:SetFrameStrata("TOOLTIP");
     iconFrame:SetFrameLevel(200);
-    iconFrame:SetWidth(34);
-    iconFrame:SetHeight(28);
+    iconFrame:SetWidth(rankIconInfo.size.width);
+    iconFrame:SetHeight(rankIconInfo.size.height);
     iconFrame:SetAlpha(ItemTrack_IconFadeAmount);
     iconFrame:EnableMouse(false);
 
     local t = iconFrame:CreateTexture(nil, "OVERLAY");
-    t:SetAtlas(atlasAssetId);
+    t:SetAtlas(rankIconInfo.atlasId);
     t:SetAllPoints(iconFrame);
 
     iconFrame.texture = t;
 
-    iconFrame:SetPoint("CENTER", -4, 7);
+    iconFrame:SetPoint(
+        "CENTER",
+        rankIconInfo.offset.x,
+        rankIconInfo.offset.y
+    );
+
     iconFrame:Show();
 
     -- Apply to icon frame to complete the object and apply the effects.

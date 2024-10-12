@@ -29,6 +29,14 @@ local function bagCheck(params)
     end
 end
 
+function StripColourCodes(txt)
+	txt = txt or "";
+	txt = string.gsub(txt, "|c%x%x%x%x%x%x%x%x", "");
+	txt = string.gsub(txt, "|c%x%x %x%x%x%x%x", "");
+	txt = string.gsub(txt, "|r", "");
+	return txt;
+end
+
 function ItemTrack_CombinedBags()
     if (not ContainerFrameCombinedBags:IsVisible()) then return end;
     bagCheck({
@@ -39,7 +47,7 @@ end
 
 --- Checks the bag frames for items with ranks and applies an icon to them.
 function ItemTrack_NonCombinedBags(containerFrame, frameTable)
-    if (not containerFrame:IsVisible()) then return end;
+    if (not containerFrame or not containerFrame:IsVisible()) then return end;
     bagCheck({
         frameToEnumerate = containerFrame,
         whereToStoreFrames = frameTable

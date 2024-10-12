@@ -13,7 +13,7 @@ ItemTrack_ContainerBagFrames = {
 local helpMessage = [[
 ItemTrack.
 
-/itemtrack debug -- Enables debug mode for better logging when running /itemtrack.
+/itemtrack debug -- Dumps out a bunch of useful information if the developer needs it.
 /itemtrack opacity <number> -- Sets the fade opacity of the applied icons.
 
 ]];

@@ -17,19 +17,42 @@ ItemSlotNames = {
     "Trinket0"
 }
 
-ItemRewardTrackAtlasIds = {
-    -- Crafted = 'todo',
-    -- Explorer = "no icon for this.",
-    Adventurer = "Professions-Icon-Quality-Tier1-Inv",
-    Veteran = "Professions-Icon-Quality-Tier2-Inv",
-    Champion = "Professions-Icon-Quality-Tier3-Inv",
-    Hero = "Professions-Icon-Quality-Tier4-Inv",
-    Myth = "Professions-Icon-Quality-Tier5-Inv",
+ItemRewardIconInfo = {
+    Crafted = {
+        atlasId = "Repair",
+        size = { width = 19, height = 18 },
+        offset = { x = -12, y = 12},
+    },
+    Adventurer = {
+        atlasId = "Professions-Icon-Quality-Tier1-Inv",
+        size = { width = 34, height = 28 },
+        offset = { x = -4, y = 7},
+    },
+    Veteran = {
+        atlasId = "Professions-Icon-Quality-Tier2-Inv",
+        size = { width = 34, height = 28 },
+        offset = { x = -4, y = 7},
+    },
+    Champion = {
+        atlasId = "Professions-Icon-Quality-Tier3-Inv",
+        size = { width = 34, height = 28 },
+        offset = { x = -4, y = 7},
+    },
+    Hero = {
+        atlasId = "Professions-Icon-Quality-Tier4-Inv",
+        size = { width = 34, height = 28 },
+        offset = { x = -4, y = 7},
+    },
+    Myth = {
+        atlasId = "Professions-Icon-Quality-Tier5-Inv",
+        size = { width = 34, height = 28 },
+        offset = { x = -4, y = 7},
+    }
 }
 
 --- Get a list of the reward tracks.
 ItemRewardTracks = {}
-for key, _ in pairs(ItemRewardTrackAtlasIds) do
+for key, _ in pairs(ItemRewardIconInfo) do
     table.insert(ItemRewardTracks, key)
 end
 
@@ -78,20 +101,22 @@ function ItemTrack_CanItemBeMarkedWithAnIcon(itemLink)
     if not tooltipData or not tooltipData.lines then return end
 
     for _, line in ipairs(tooltipData.lines) do
-      local text = line.leftText;
-      local isOnRewardTrack = string.find(text, "Upgrade Level:");
+        local text = line.leftText;
+        local isOnRewardTrack = string.find(text, "Upgrade Level:");
+        local isOmenCrafted = string.sub(StripColourCodes(text), -7) == "Crafted";
 
-      if (isOnRewardTrack) then
-          local rewardTrackName = ItemTrack_GetRewardTrackFromToolTipLine(text)
-          return true, rewardTrackName;
-      end
+        if (isOnRewardTrack or isOmenCrafted) then
+            local rewardTrackName = ItemTrack_GetRewardTrackFromToolTipLine(StripColourCodes(text))
+
+            return true, rewardTrackName;
+        end
     end
-  end
+end
 
 function ItemTrack_GetRewardTrackFromToolTipLine(text)
     for _, track in ipairs(ItemRewardTracks) do
         if string.find(text, track) then
-                return track;
+            return track;
         end
     end
     return nil;
