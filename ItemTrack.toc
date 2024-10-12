@@ -1,5 +1,5 @@
 ## Interface: 100002
-## Version: 1.0.0
+## Version: 1.0.2
 ## Title: ItemTrack
 ## Notes: Add reward track icons to items.
 ## Author: Jordan Benyon
