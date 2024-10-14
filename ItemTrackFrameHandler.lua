@@ -26,6 +26,7 @@ end
 
 function ItemTrack_ApplyIcon(itemIconInfo)
     local rankIconInfo = ItemRewardIconInfo[itemIconInfo.rank];
+    if (not rankIconInfo.show) then return end;
 
     -- Don't duplicate frames.
     if (itemIconInfo.iconFrame ~= nil) then

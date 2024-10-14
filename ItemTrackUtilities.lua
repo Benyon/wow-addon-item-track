@@ -17,36 +17,49 @@ ItemSlotNames = {
     "Trinket0"
 }
 
+--- All tracks need to be here.
 ItemRewardIconInfo = {
+    Explorer = {
+        atlasId = "No icon for this.",
+        size = { width = 0, height = 0 },
+        offset = { x = 0, y = 0},
+        show = false,
+    },
     Crafted = {
         atlasId = "Repair",
         size = { width = 19, height = 18 },
         offset = { x = -12, y = 12},
+        show = true,
     },
     Adventurer = {
         atlasId = "Professions-Icon-Quality-Tier1-Inv",
         size = { width = 34, height = 28 },
         offset = { x = -4, y = 7},
+        show = true,
     },
     Veteran = {
         atlasId = "Professions-Icon-Quality-Tier2-Inv",
         size = { width = 34, height = 28 },
         offset = { x = -4, y = 7},
+        show = true,
     },
     Champion = {
         atlasId = "Professions-Icon-Quality-Tier3-Inv",
         size = { width = 34, height = 28 },
         offset = { x = -4, y = 7},
+        show = true,
     },
     Hero = {
         atlasId = "Professions-Icon-Quality-Tier4-Inv",
         size = { width = 34, height = 28 },
         offset = { x = -4, y = 7},
+        show = true,
     },
     Myth = {
         atlasId = "Professions-Icon-Quality-Tier5-Inv",
         size = { width = 34, height = 28 },
         offset = { x = -4, y = 7},
+        show = true,
     }
 }
 
